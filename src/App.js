@@ -12,31 +12,30 @@ class App extends React.Component{
     this.state={
       input:'',
       boxes:[],
-      submitting:false,
-      submitted:false,
       imageURL:''
     }
 
   }
+
+
+
+
+
+
   onInputChange=(e)=>{
     this.setState({input:e.target.value});
   }
 
-  onSubmit=()=>{
-// Your PAT (Personal Access Token) can be found in the portal under Authentification
+
+
+
+  onSubmit=()=>{ 
 const PAT = '872ed8e7dbbd4d41b80ab5d188290ab6';
-// Specify the correct user_id/app_id pairings
-// Since you're making inferences outside your app's scope
 const USER_ID = 'q4td8hkkwz66';
 const APP_ID = 'face-detection';
-// Change these to whatever model and image URL you want to use
 const MODEL_ID = 'face-detection';
 const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
 const IMAGE_URL = this.state.input;
-
-///////////////////////////////////////////////////////////////////////////////////
-// YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
-///////////////////////////////////////////////////////////////////////////////////
 
 const raw = JSON.stringify({
     "user_app_id": {
@@ -68,14 +67,12 @@ const requestOptions = {
 // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
 // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
 // this will default to the latest version_id
-this.setState({submitting:true,imageURL:this.state.input})
+this.setState({imageURL:this.state.input})
 this.setState({boxes:[]})
 fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
 .then(response => response.json())
 .then(result => {
-
     const regions = result.outputs[0].data.regions;
-    this.setState({submitting:false,submitted:true})
     this.setState({
       boxes:regions.map((region)=>{
         const boundingBox= region.region_info.bounding_box;
@@ -88,17 +85,13 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
         }
       })
     })
-
-
 })
 .catch(error => {console.log('error', error)
-this.setState({boxes:[]})
+this.setState({boxes:[]
+})
 }
 );
   }
-
-
-
 
 render(){
   return (
@@ -109,7 +102,7 @@ render(){
       <Logo/>
       <Rank/>
       <ImageURLInput text={this.state.input} onSubmit={this.onSubmit} onInputChange={this.onInputChange}  />
-      <ImageBody imageURL={this.state.imageURL} data={this.state.boxes} submitted={this.state.submitted} submitting={this.state.submitting} />
+      <ImageBody imageURL={this.state.imageURL} data={this.state.boxes}  />
     </div>
   );
 

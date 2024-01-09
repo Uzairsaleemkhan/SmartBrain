@@ -1,6 +1,6 @@
 .box{
     position: absolute;
-    box-shadow: 0 0 0 3px #111 inset;
+    box-shadow: 0 0 0 2px #ec3211 inset;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -11,9 +11,10 @@
     position: relative;
     width: 500px;
     height:auto;
+    margin: 2rem auto;
   }
 
   .image{
-    width: 100%;
+    width: 500px;
     height: auto;
   }
