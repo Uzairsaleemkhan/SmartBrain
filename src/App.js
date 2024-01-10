@@ -6,13 +6,17 @@ import ImageURLInput from "./components/ImageURLInput/ImageURLInput";
 import Rank from './components/Rank/Rank';
 import Particle from "./components/Particles/Particle";
 import ImageBody from "./components/ImageBody/ImageBody";
+import Signin from "./components/Signin/Signin";
+import Register from "./components/Register/Register";
 class App extends React.Component{
   constructor(){
     super();
     this.state={
       input:'',
       boxes:[],
-      imageURL:''
+      imageURL:'',
+      route:'signin',
+      isSignedIn:false
     }
 
   }
@@ -24,6 +28,13 @@ class App extends React.Component{
 
   onInputChange=(e)=>{
     this.setState({input:e.target.value});
+  }
+  onRouteChange=(route)=>{
+    this.setState({route:route})
+    if(route==='home') this.setState({isSignedIn:true})
+    if(route==='signin'||route==='register'){
+      this.setState({isSignedIn:false})
+    }
   }
 
 
@@ -96,13 +107,23 @@ this.setState({boxes:[]
 render(){
   return (
     <div> 
-    
       <Particle/>
-      <Navigation/>
+      <Navigation  isSignedIn={this.state.isSignedIn}  onRouteChange={this.onRouteChange}/>
+    {
+      this.state.route==='signin'?(
+      <Signin onRouteChange={this.onRouteChange} />
+      ):
+      this.state.route==='home'?(
+        <>
       <Logo/>
       <Rank/>
       <ImageURLInput text={this.state.input} onSubmit={this.onSubmit} onInputChange={this.onInputChange}  />
       <ImageBody imageURL={this.state.imageURL} data={this.state.boxes}  />
+        </>
+      ):this.state.route==='register'?(
+        <Register onRouteChange={this.onRouteChange} />
+      ):''
+    }
     </div>
   );
 
