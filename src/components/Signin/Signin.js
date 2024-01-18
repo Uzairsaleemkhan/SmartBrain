@@ -1,8 +1,40 @@
-
 import React from "react";
+class Signin extends React.Component{
+constructor(props){
+  super(props);
+  this.state={
+    signinEmail:'',
+    signinPassword:''
+  }
+}
 
-const Signin=({onRouteChange})=>{
+onEmailChange=(e)=> this.setState({signinEmail:e.target.value})
+onPasswordChange=(e)=>this.setState({signinPassword:e.target.value})
+onSigninSubmit=(e)=>{
+  e.preventDefault();
+  console.log(this.state);
+  fetch('http://localhost:3000/signin',{
+    method:'post',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      email:this.state.signinEmail,
+      password:this.state.signinPassword 
+    })
+  })
+  .then(res=>res.json())
+  .then(user=>{
+    if(user.email){
+      this.props.loadUser(user);
+      this.props.onRouteChange('home');
+    }
+  })
 
+
+}
+
+
+render(){
+  const {onRouteChange}= this.props;
 
     return (
       <article class="br3  ba shadow-5 b--black-10 mv4 w-100 w-50-m w-25-l mw6 center">
@@ -19,6 +51,7 @@ const Signin=({onRouteChange})=>{
                   type="email"
                   name="email-address"
                   id="email-address"
+                  onChange={this.onEmailChange}
                 />
               </div>
               <div class="mv3">
@@ -30,6 +63,7 @@ const Signin=({onRouteChange})=>{
                   type="password"
                   name="password"
                   id="password"
+                  onChange={this.onPasswordChange}
                 />
               </div>
             </fieldset>
@@ -38,7 +72,7 @@ const Signin=({onRouteChange})=>{
                 className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
                 type="submit"
                 value="Sign in"
-                onClick={_=>onRouteChange('home')}
+                onClick={this.onSigninSubmit}
               />
             </div>
             <div className="lh-copy mt3">
@@ -50,6 +84,7 @@ const Signin=({onRouteChange})=>{
         </main>
       </article>
     );
+}
 }
 
 export default Signin;

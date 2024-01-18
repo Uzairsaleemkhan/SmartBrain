@@ -16,15 +16,29 @@ class App extends React.Component{
       boxes:[],
       imageURL:'',
       route:'signin',
-      isSignedIn:false
+      isSignedIn:false,
+      user:{
+        name:'',
+        email:'',
+        entries:0,
+        joined: '',
+        id:''
+      }
     }
 
   }
 
 
-
-
-
+  loadUser=(user)=>{
+    this.setState({user:{
+      name:user.name,
+      email:user.email,
+      entries:user.entries,
+      joined:user.joined,
+      id:user.id
+    }})
+    console.log(user)
+  }
 
   onInputChange=(e)=>{
     this.setState({input:e.target.value});
@@ -81,7 +95,27 @@ const requestOptions = {
 this.setState({imageURL:this.state.input})
 this.setState({boxes:[]})
 fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-.then(response => response.json())
+.then(response =>
+  {
+    if(response){
+      fetch('http://localhost:3000/image',{
+        method:'put',
+        headers:{
+          'Content-Type':'application/json',
+        },
+        body:JSON.stringify({
+          id:this.state.user.id
+        })
+      })
+      .then(res=>res.json())
+      .then(data=>this.setState({user:{entries:data,name:this.state.user.name,email:this.state.user.email,joined:this.state.user.joined,id:this.state.user.id}}))
+      
+     return response.json();
+
+    }
+
+  }
+   )
 .then(result => {
     const regions = result.outputs[0].data.regions;
     this.setState({
@@ -111,17 +145,17 @@ render(){
       <Navigation  isSignedIn={this.state.isSignedIn}  onRouteChange={this.onRouteChange}/>
     {
       this.state.route==='signin'?(
-      <Signin onRouteChange={this.onRouteChange} />
+      <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
       ):
       this.state.route==='home'?(
         <>
       <Logo/>
-      <Rank/>
+      <Rank entries={this.state.user.entries} name={this.state.user.name} />
       <ImageURLInput text={this.state.input} onSubmit={this.onSubmit} onInputChange={this.onInputChange}  />
       <ImageBody imageURL={this.state.imageURL} data={this.state.boxes}  />
         </>
       ):this.state.route==='register'?(
-        <Register onRouteChange={this.onRouteChange} />
+        <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
       ):''
     }
     </div>
