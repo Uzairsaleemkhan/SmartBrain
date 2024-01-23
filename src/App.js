@@ -8,27 +8,25 @@ import Particle from "./components/Particles/Particle";
 import ImageBody from "./components/ImageBody/ImageBody";
 import Signin from "./components/Signin/Signin";
 import Register from "./components/Register/Register";
+const initialState={
+  input:'',
+  boxes:[],
+  imageURL:'',
+  route:'register',
+  isSignedIn:false,
+  user:{
+    name:'',
+    email:'',
+    entries:0,
+    joined: '',
+    id:''
+  }
+}
 class App extends React.Component{
   constructor(){
     super();
-    this.state={
-      input:'',
-      boxes:[],
-      imageURL:'',
-      route:'signin',
-      isSignedIn:false,
-      user:{
-        name:'',
-        email:'',
-        entries:0,
-        joined: '',
-        id:''
-      }
-    }
-
+    this.state= initialState
   }
-
-
   loadUser=(user)=>{
     this.setState({user:{
       name:user.name,
@@ -37,84 +35,57 @@ class App extends React.Component{
       joined:user.joined,
       id:user.id
     }})
-    console.log(user)
   }
 
   onInputChange=(e)=>{
     this.setState({input:e.target.value});
   }
   onRouteChange=(route)=>{
-    this.setState({route:route})
-    if(route==='home') this.setState({isSignedIn:true})
+    if(route==='home') this.setState({isSignedIn:true,route})
     if(route==='signin'||route==='register'){
-      this.setState({isSignedIn:false})
+      this.setState({...initialState,route,isSignedIn:false});
     }
   }
+
 
 
 
 
   onSubmit=()=>{ 
-const PAT = '872ed8e7dbbd4d41b80ab5d188290ab6';
-const USER_ID = 'q4td8hkkwz66';
-const APP_ID = 'face-detection';
-const MODEL_ID = 'face-detection';
-const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
-const IMAGE_URL = this.state.input;
-
-const raw = JSON.stringify({
-    "user_app_id": {
-        "user_id": USER_ID,
-        "app_id": APP_ID
-    },
-    "inputs": [
-        {
-            "data": {
-                "image": {
-                    "url": IMAGE_URL,
-
-                    // "base64": IMAGE_BYTES_STRING
-                }
-            }
-        }
-    ]
-});
-
-const requestOptions = {
-    method: 'POST',
-    headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Key ' + PAT
-    },
-    body: raw
-};
-
-// NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-// https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-// this will default to the latest version_id
-this.setState({imageURL:this.state.input})
-this.setState({boxes:[]})
-fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-.then(response =>
-  {
-    if(response){
-      fetch('http://localhost:3000/image',{
-        method:'put',
-        headers:{
-          'Content-Type':'application/json',
-        },
-        body:JSON.stringify({
-          id:this.state.user.id
-        })
+    this.setState({imageURL:this.state.input})
+    fetch('http://localhost:3000/detectimage',{
+      method:'post',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body:JSON.stringify({
+        input:this.state.input
       })
-      .then(res=>res.json())
-      .then(data=>this.setState({user:{entries:data,name:this.state.user.name,email:this.state.user.email,joined:this.state.user.joined,id:this.state.user.id}}))
-      
-     return response.json();
+    })
+    .then( response => {
+      console.log(response.body)
+      return  response.json()
+    })
+    .then(response =>
+      {
+          if(response){
+            fetch('http://localhost:3000/image',{
+              method:'put',
+              headers:{
+                'Content-Type':'application/json',
+              },
+              body:JSON.stringify({
+                id:this.state.user.id
+              })
+            })
+            .then(res=>res.json())
+            .then(data=>this.setState({user:{entries:data,name:this.state.user.name,email:this.state.user.email,joined:this.state.user.joined,id:this.state.user.id}}))
+            .catch(err=>console.log('error updating entries'))
+          return response;
 
-    }
+          }
 
-  }
+        }
    )
 .then(result => {
     const regions = result.outputs[0].data.regions;

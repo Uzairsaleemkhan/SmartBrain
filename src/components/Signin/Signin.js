@@ -23,7 +23,7 @@ onSigninSubmit=(e)=>{
   })
   .then(res=>res.json())
   .then(user=>{
-    if(user.email){
+    if(user?.email){
       this.props.loadUser(user);
       this.props.onRouteChange('home');
     }
