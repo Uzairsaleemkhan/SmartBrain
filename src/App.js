@@ -53,7 +53,7 @@ class App extends React.Component{
 
   onSubmit=()=>{ 
     this.setState({imageURL:this.state.input})
-    fetch('http://localhost:3000/detectimage',{
+    fetch('https://smartbrain-backend-3bps.onrender.com/detectimage',{
       method:'post',
       headers:{
         'Content-Type':'application/json',
@@ -69,7 +69,7 @@ class App extends React.Component{
     .then(response =>
       {
           if(response){
-            fetch('http://localhost:3000/image',{
+            fetch('https://smartbrain-backend-3bps.onrender.com/image',{
               method:'put',
               headers:{
                 'Content-Type':'application/json',

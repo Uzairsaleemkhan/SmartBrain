@@ -19,7 +19,7 @@ onPasswordChange=(e)=>this.setState({password:e.target.value})
 onRegisterSubmit=(e)=>{
   e.preventDefault();
   console.log(this.state);
-  fetch('http://localhost:3000/register',{
+  fetch('https://smartbrain-backend-3bps.onrender.com/register',{
     method:'post',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
