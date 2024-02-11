@@ -108,7 +108,9 @@ this.setState({boxes:[]
 }
 );
   }
-
+componentDidMount(){
+  fetch('https://smartbrain-backend-3bps.onrender.com/test');
+}
 render(){
   return (
     <div> 
